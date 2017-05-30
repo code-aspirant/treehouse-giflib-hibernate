@@ -1,15 +1,21 @@
 package com.teamtreehouse.giflib.web.controller;
 
 import com.teamtreehouse.giflib.model.Gif;
+import com.teamtreehouse.giflib.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class GifController {
+
+    @Autowired
+    private CategoryService categoryService;
 
     // Home page - index of all GIFs
     @RequestMapping("/")
@@ -51,8 +57,11 @@ public class GifController {
     }
 
     // Upload a new GIF
+    // @RequestParam can be set with a custom name
+    // if that name does not match the name of the
+    // parameter in the method
     @RequestMapping(value = "/gifs", method = RequestMethod.POST)
-    public String addGif() {
+    public String addGif(@RequestParam MultipartFile file) {
         // TODO: Upload new GIF if data is valid
 
         // TODO: Redirect browser to new GIF's detail view
@@ -63,7 +72,8 @@ public class GifController {
     @RequestMapping("/upload")
     public String formNewGif(Model model) {
         // TODO: Add model attributes needed for new GIF upload form
-
+        model.addAttribute("gif", new Gif());
+        model.addAttribute("categories", categoryService.findAll());
         return "gif/form";
     }
 
