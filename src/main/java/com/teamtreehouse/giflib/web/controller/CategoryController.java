@@ -3,6 +3,7 @@ package com.teamtreehouse.giflib.web.controller;
 import com.teamtreehouse.giflib.model.Category;
 import com.teamtreehouse.giflib.service.CategoryService;
 import com.teamtreehouse.giflib.web.Color;
+import com.teamtreehouse.giflib.web.FlashMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,9 +57,15 @@ public class CategoryController {
     // Form for editing an existing category
     @RequestMapping("categories/{categoryId}/edit")
     public String formEditCategory(@PathVariable Long categoryId, Model model) {
-        // TODO: Add model attributes needed for edit form
-
+        // Check if there is an existing category attribute. See flash message
+        if (!model.containsAttribute("category")) {
+            // TODO: Add model attributes needed for new form
+            model.addAttribute("category", categoryService.findById(categoryId));
+        }
+        // Import the color enum and add all options to the model
+        model.addAttribute("colors", Color.values());
         return "category/form";
+
     }
 
     // Update an existing category
@@ -85,6 +92,9 @@ public class CategoryController {
             return "redirect:/categories/add";
         }
         categoryService.save(category);
+
+        redirectAttributes.addFlashAttribute(
+                "flash", new FlashMessage("Category successfully added!", FlashMessage.Status.SUCCESS));
 
         // TODO: Redirect browser to /categories
         // This will invoke the method that matches the mapping
