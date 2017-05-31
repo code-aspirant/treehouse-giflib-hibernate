@@ -27,7 +27,7 @@ public class CategoryController {
     public String listCategories(Model model) {
         // TODO: Get all categories
         List<Category> categories = categoryService.findAll();
-        model.addAttribute("categories",categories);
+        model.addAttribute("categories", categories);
         return "category/index";
     }
 
@@ -35,9 +35,9 @@ public class CategoryController {
     @RequestMapping("/categories/{categoryId}")
     public String category(@PathVariable Long categoryId, Model model) {
         // TODO: Get the category given by categoryId
-        Category category = null;
-
+        Category category = categoryService.findById(categoryId);
         model.addAttribute("category", category);
+        model.addAttribute("gifs", category.getGifs());
         return "category/details";
     }
 
@@ -51,6 +51,9 @@ public class CategoryController {
         }
         // Import the color enum and add all options to the model
         model.addAttribute("colors", Color.values());
+        model.addAttribute("action", "/categories");
+        model.addAttribute("heading", "New Category");
+        model.addAttribute("submit", "Add");
         return "category/form";
     }
 
@@ -64,17 +67,35 @@ public class CategoryController {
         }
         // Import the color enum and add all options to the model
         model.addAttribute("colors", Color.values());
+        model.addAttribute("action", String.format("/categories/%s", categoryId));
+        model.addAttribute("heading", "Edit Category");
+        model.addAttribute("submit", "Update");
         return "category/form";
-
     }
 
     // Update an existing category
+    // TODO: How does Spring capture the Category object from the form submission?
     @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.POST)
-    public String updateCategory() {
+    public String updateCategory(@Valid Category category,
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes) {
         // TODO: Update category if valid data was received
+        if (result.hasErrors()) {
+            // Add category if invalid data was received
+            // This category object will survive 1 redirect
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.category", result);
+            redirectAttributes.addFlashAttribute("category", category);
+            return String.format("redirect:/categories/%s/edit", category.getId());
+        }
+        categoryService.save(category);
+
+        redirectAttributes.addFlashAttribute(
+                "flash", new FlashMessage("Category successfully updated!", FlashMessage.Status.SUCCESS));
 
         // TODO: Redirect browser to /categories
-        return null;
+        // This will invoke the method that matches the mapping
+        // which in this case is listCategories
+        return "redirect:/categories";
     }
 
     // Add a category
@@ -88,6 +109,7 @@ public class CategoryController {
         if (result.hasErrors()) {
             // Add category if invalid data was received
             // This category object will survive 1 redirect
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.category", result);
             redirectAttributes.addFlashAttribute("category", category);
             return "redirect:/categories/add";
         }

@@ -1,7 +1,9 @@
 package com.teamtreehouse.giflib.dao;
 
 import com.teamtreehouse.giflib.model.Category;
+import com.teamtreehouse.giflib.model.Gif;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,12 @@ public class CategoryDaoImpl implements CategoryDao {
     @Override
     public Category findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return session.get(Category.class, id);
+            Category category = session.get(Category.class, id);
+            // Initialize the gifs otherwise you will get a LazyInitializationError
+            // since you'll be trying to access gifs outside of a hibernate session
+            // We are initializing the gifs collection only WHEN WE NEED IT
+            Hibernate.initialize(category.getGifs());
+            return category;
         }
     }
 
@@ -38,7 +45,9 @@ public class CategoryDaoImpl implements CategoryDao {
     public void save(Category category) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.save(category);
+            // Hibernate will be smart enough to determine if the entity has already
+            // been persisted. If it has it will update rather than persist a new entry
+            session.saveOrUpdate(category);
             session.getTransaction().commit();
         }
     }

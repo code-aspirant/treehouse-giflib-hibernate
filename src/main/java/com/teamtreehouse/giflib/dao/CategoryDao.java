@@ -1,6 +1,7 @@
 package com.teamtreehouse.giflib.dao;
 
 import com.teamtreehouse.giflib.model.Category;
+import com.teamtreehouse.giflib.model.Gif;
 
 import java.util.List;
 

@@ -2,12 +2,15 @@ package com.teamtreehouse.giflib.service;
 
 import com.teamtreehouse.giflib.dao.CategoryDao;
 import com.teamtreehouse.giflib.model.Category;
+import com.teamtreehouse.giflib.model.Gif;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service // Spring will pick this up as a Bean
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     // Autowire something by it's interface name. Spring will find the only implementation
@@ -21,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findById(Long id) {
-        return null;
+        return categoryDao.findById(id);
     }
 
     @Override

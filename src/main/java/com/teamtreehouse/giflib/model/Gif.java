@@ -1,6 +1,8 @@
 package com.teamtreehouse.giflib.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -13,6 +15,9 @@ public class Gif {
 
     @Lob // Allows us to store the gif image into the database as a 'Large object'
     private byte[] bytes;
+
+    @NotNull
+    @Size(max = 25)
     private String description;
 
     @ManyToOne
