@@ -27,16 +27,28 @@ public class GifServiceImpl implements GifService {
 
     @Override
     public void save(Gif gif, MultipartFile file) {
-        try {
-            gif.setBytes(file.getBytes());
-        } catch (IOException e) {
-            System.err.println("Unable to get byte array from uploaded file");
+        if (file != null && !file.isEmpty()) {
+            try {
+                gif.setBytes(file.getBytes());
+            } catch (IOException e) {
+                System.err.println("Unable to get byte array from uploaded file");
+            }
+        } else {
+            Gif persitedGif = gifDao.findById(gif.getId());
+            gif.setBytes(persitedGif.getBytes());
         }
         gifDao.save(gif);
     }
 
     @Override
+    public void toggleFavorite(Gif gif) {
+        gif.setFavorite(!gif.isFavorite());
+        gifDao.save(gif);
+    }
+
+    @Override
     public void delete(Gif gif) {
+        gif.setBytes(null);
         gifDao.delete(gif);
     }
 }

@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s12 l8">
+            <div class="col s12 l8" th:classappend="${#fields.hasErrors('category')} ? 'error' : ''">
                 <select th:field="*{category.id}" class="cs-select cs-skin-border">
                     <option value="" disabled="disabled">Select a category</option>
                     <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}" th:style="|color:${cat.colorCode}|">Technology</option>
@@ -42,6 +42,13 @@
             <div class="col s12">
                 <button th:text="${submitText}" type="submit" class="button">Upload</button>
                 <a href="javascript:window.location = document.referrer;" class="button">Cancel</a>
+            </div>
+        </div>
+        <div class="row delete" th:if="${gif.id != null}">
+            <div class="col s12 l8">
+                <form th:action="@{|/gifs/{gif.id}/delete|}" method="post">
+                    <button type="submit" class="button">Delete</button>
+                </form>
             </div>
         </div>
     </form>

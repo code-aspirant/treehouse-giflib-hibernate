@@ -34,6 +34,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Category category) {
+        // TODO: Check for non-empty categories here. Then throw a non-empty category exception. See Teacher's notes
+        // TODO: If above complete, remove that logic from the controller
         categoryDao.delete(category);
     }
 }
