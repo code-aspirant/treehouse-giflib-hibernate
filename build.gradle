@@ -30,4 +30,9 @@ dependencies {
     compile 'org.apache.tomcat:tomcat-dbcp:8.0.32'
     compile 'com.h2database:h2:1.4.191'
     compile 'org.hashids:hashids:1.0.1'
+
+    testCompile 'org.testng:testng:6.11'
+    testCompile 'org.seleniumhq.selenium:selenium-java:3.4.0'
+    testCompile 'io.github.bonigarcia:webdrivermanager:1.6.2'
+    testCompile 'com.codeborne:selenide:4.4.3'
 }
