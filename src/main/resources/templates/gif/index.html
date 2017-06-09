@@ -7,7 +7,7 @@
 <div th:replace="layout :: flash"></div>
 <div class="gifs container">
     <div class="row">
-        <div th:each="gif : ${gifs}" class="col s12 l4">
+        <div th:each="gif : ${gifs}" class="col s12 l4 gif">
             <a th:href="@{|/gifs/${gif.id}|}" class="actions">
                 <img th:src="@{|/gifs/${gif.id}.gif|}" alt="gif" />
                 <form th:action="@{|/gifs/${gif.id}/favorite|}" method="post">

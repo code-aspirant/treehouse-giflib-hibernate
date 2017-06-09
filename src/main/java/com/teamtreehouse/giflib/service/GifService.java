@@ -8,7 +8,8 @@ import java.util.List;
 public interface GifService {
     List<Gif> findAll();
     Gif findById(Long id);
+    void toggleFavorite(Gif gif);
+    // Add the file parameter b/c our entity does not contain the file
     void save(Gif gif, MultipartFile file);
     void delete(Gif gif);
-    void toggleFavorite(Gif gif);
 }

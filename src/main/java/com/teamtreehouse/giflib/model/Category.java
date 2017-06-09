@@ -9,7 +9,8 @@ import java.util.List;
 
 @Entity
 public class Category {
-    @Id
+
+    @Id // All other non-transient fields are assumed to be columns
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -17,10 +18,22 @@ public class Category {
     @Size(min = 3, max = 12)
     private String name;
 
+    /**
+     * Must be not null
+     * Pattern of # plus 0-9, a-f, and or A-F for 6 places
+     */
     @NotNull
     @Pattern(regexp = "#[0-9a-fA-F]{6}")
     private String colorCode;
 
+    // One category object can be related to many Gif objects
+    // mappedBy: The category field of the Gif entity that will be used to map the category of each gif
+    // and by default use the Category's id field and therefore creating a category_id field in the gif table
+    // TODO: No session available if loaded Lazily. How to solve other than loading eargerly???
+    // By default, the gifs mapping is not initialized when the Category object is fetched.
+    // This increases performance, but you must ensure that you initialize category.getGifs.
+    // EAGER loading is frowned upon since you will be always running a second query on gifs
+    // whenever you fetch a Category. This is especially apparent if you fetch all categories.
     @OneToMany(mappedBy = "category")
     private List<Gif> gifs = new ArrayList<>();
 

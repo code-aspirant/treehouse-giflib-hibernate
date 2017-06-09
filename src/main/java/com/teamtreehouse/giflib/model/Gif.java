@@ -1,17 +1,28 @@
 package com.teamtreehouse.giflib.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Gif {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
+    @Lob // Allows us to store the gif image into the database as a 'Large object'
     private byte[] bytes;
+
+    @Transient
+    private MultipartFile file;
+
+    @NotNull
+    @Size(max = 25)
     private String description;
 
     @ManyToOne
@@ -58,6 +69,8 @@ public class Gif {
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
     }
+
+    public MultipartFile getFile() { return file; }
 
     public String getDescription() {
         return description;

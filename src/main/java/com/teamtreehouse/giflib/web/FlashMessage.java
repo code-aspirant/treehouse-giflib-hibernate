@@ -1,6 +1,7 @@
 package com.teamtreehouse.giflib.web;
 
 public class FlashMessage {
+
     private String message;
     private Status status;
 
@@ -18,6 +19,6 @@ public class FlashMessage {
     }
 
     public static enum Status {
-        SUCCESS, FAILURE
+        SUCCESS, FAILURE;
     }
 }

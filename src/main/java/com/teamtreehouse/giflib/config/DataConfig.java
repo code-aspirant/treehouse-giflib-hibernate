@@ -13,8 +13,10 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("app.properties")
+@PropertySource("app.properties") // Tell spring where the properties file is
 public class DataConfig {
+
+    // Get access to the properties values
     @Autowired
     private Environment env;
 
@@ -23,6 +25,8 @@ public class DataConfig {
         Resource config = new ClassPathResource("hibernate.cfg.xml");
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setConfigLocation(config);
+        // Tell spring where to find entity mappings
+        // This also avoids hard-coding values in your source code
         sessionFactory.setPackagesToScan(env.getProperty("giflib.entity.package"));
         sessionFactory.setDataSource(dataSource());
         return sessionFactory;
@@ -30,18 +34,14 @@ public class DataConfig {
 
     @Bean
     public DataSource dataSource() {
-        BasicDataSource ds = new BasicDataSource();
-
-        // Driver class name
-        ds.setDriverClassName(env.getProperty("giflib.db.driver"));
-
+        BasicDataSource dataSource = new BasicDataSource();
+        // Set Driver class name
+        dataSource.setDriverClassName(env.getProperty("giflib.db.driver"));
         // Set URL
-        ds.setUrl(env.getProperty("giflib.db.url"));
-
+        dataSource.setUrl(env.getProperty("giflib.db.url"));
         // Set username & password
-        ds.setUsername(env.getProperty("giflib.db.username"));
-        ds.setPassword(env.getProperty("giflib.db.password"));
-
-        return ds;
+        dataSource.setUsername(env.getProperty("giflib.db.username"));
+        dataSource.setPassword(env.getProperty("giflib.db.password"));
+        return dataSource;
     }
 }

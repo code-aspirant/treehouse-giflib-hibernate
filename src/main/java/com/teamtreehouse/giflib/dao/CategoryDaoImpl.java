@@ -1,6 +1,8 @@
 package com.teamtreehouse.giflib.dao;
 
 import com.teamtreehouse.giflib.model.Category;
+import com.teamtreehouse.giflib.model.Gif;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,71 +13,51 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
-@Repository
+@Repository // Always implement the implementation, not the interface
 public class CategoryDaoImpl implements CategoryDao {
+
     @Autowired
     private SessionFactory sessionFactory;
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Category> findAll() {
-        // Open a session
-        Session session = sessionFactory.openSession();
-
-        // DEPRECATED as of Hibernate 5.2.0
-        // List<Category> categories = session.createCriteria(Category.class).list();
-
-        // Create CriteriaBuilder
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-
-        // Create CriteriaQuery
-        CriteriaQuery<Category> criteria = builder.createQuery(Category.class);
-
-        // Specify criteria root
-        criteria.from(Category.class);
-
-        // Execute query
-        List<Category> categories = session.createQuery(criteria).getResultList();
-
-        // Close session
-        session.close();
-
-        return categories;
+        try (Session session = sessionFactory.openSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Category> criteria = builder.createQuery(Category.class);
+            criteria.from(Category.class);
+            return session.createQuery(criteria).getResultList();
+        }
     }
 
     @Override
     public Category findById(Long id) {
-        Session session = sessionFactory.openSession();
-        Category category = session.get(Category.class,id);
-        Hibernate.initialize(category.getGifs());
-        session.close();
-        return category;
+        try (Session session = sessionFactory.openSession()) {
+            Category category = session.get(Category.class, id);
+            // Initialize the gifs otherwise you will get a LazyInitializationError
+            // since you'll be trying to access gifs outside of a hibernate session
+            // We are initializing the gifs collection only WHEN WE NEED IT
+            Hibernate.initialize(category.getGifs());
+            return category;
+        }
     }
 
     @Override
     public void save(Category category) {
-        // Open a session
-        Session session = sessionFactory.openSession();
-
-        // Begin a transaction
-        session.beginTransaction();
-
-        // Save the category
-        session.saveOrUpdate(category);
-
-        // Commit the transaction
-        session.getTransaction().commit();
-
-        // Close the session
-        session.close();
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            // Hibernate will be smart enough to determine if the entity has already
+            // been persisted. If it has it will update rather than persist a new entry
+            session.saveOrUpdate(category);
+            session.getTransaction().commit();
+        }
     }
 
     @Override
     public void delete(Category category) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        session.delete(category);
-        session.getTransaction().commit();
-        session.close();
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(category);
+            session.getTransaction().commit();
+        }
     }
 }
